@@ -1,1 +1,1 @@
-web: gunicorn reddit_app.py:app --log-file=-
+web: gunicorn reddit_app:app --log-file=-
