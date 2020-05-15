@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>/r/{{subreddit}} topics</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+        <style>
+            body {
+                font-family: Verdana, Arial, sans-serif;
+                background-color:#EFF7FF;
+            }
+            #header-container {
+                background-color:#FF5700
+            }
+            a {
+                color:white;
+                text-decoration: none;
+            }
+            a:hover {
+                color:white;
+                text-decoration: none;
+            }
+            a:visited {
+                color:white;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id='header-container' class='container-fluid' >
+            <a href='/'>
+                <div class='row'>
+                    <div id='title' class='col mx-sm-3 mt-sm-1'>
+                        <h2>What are people talking about on reddit?</h2>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div id='content-container' class='container-fluid'>
+            <div class='row mt-md-3'>
+                <div id='input-col' class='col-4 '>
+                    <form action="/f" method="GET">
+                        <div class="form-row mx-sm-3 mb-2">
+                            <label for="subreddit">Subreddit</label>
+                            <input type="text" class="form-control" id="subreddit" aria-describedby="subredditHelp"
+                                name="subreddit" value = "{{subreddit}}" placeholder="e.g. all">
+                            <small id="subredditHelp" class="form-text text-muted">Enter the name of a subreddit to find out what people are talking about. Try adding subreddits with '+'.</small>
+                        </div>
+                        <div class="form-row mx-sm-3 mb-3">
+                            <label for="postType">Post type</label>
+                            <select class="form-control" id="postType" name="postType">
+                                <option selected>hot</option>
+                                <option>new</option>
+                                <option>top</option>
+                                <option>rising</option>
+                                <option>controversial</option>
+                                <option>gilded</option>
+                            </select>
+                        </div>
+                        <div class="form-row mx-sm-3 mb-2">
+                            <button type="submit" class="btn btn-primary ">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id='results-col' class='col-8'>
+                    <small class='text-muted'>Top topics for {{post_type}} posts on /r/{{subreddit}}</small>
+                    <p>{{topic1}}</p>
+                    <p>{{topic2}}</p>
+                    <p>{{topic3}}</p>
+                    <p>{{topic4}}</p>
+                    <p>{{topic5}}</p>
+                    <p>{{topic6}}</p>
+                    <p>{{topic7}}</p>
+                    <p>{{topic8}}</p>
+                    <p>{{topic9}}</p>
+                    <p>{{topic10}}</p>
+                </div>
+            </div>
+        </div>
+        <div id='footer-container' class='container-xl'>
+            <div class="row d-flex justify-content-center align-items-center pb-3">
+                <small class="text-muted">
+                    This is yet unfinished. Also not affiliated with Reddit.
+                </small>
+            </div>
+        </div>
+    </body>
+</html>
