@@ -3,7 +3,7 @@ import praw
 
 import nlp_helper_funcs
 
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import TreebankWordTokenizer
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
@@ -11,7 +11,7 @@ from nltk.corpus import stopwords
 from sklearn.decomposition import TruncatedSVD
 
 # Initialize NLP systems
-vectorizer = CountVectorizer(ngram_range=(
+vectorizer = TfidfVectorizer(ngram_range=(
     1, 3), stop_words=stopwords.words('english'))
 tokenizer = TreebankWordTokenizer().tokenize
 stemmer = PorterStemmer()
