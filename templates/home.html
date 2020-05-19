@@ -11,43 +11,53 @@
                 font-family: Verdana, Arial, sans-serif;
                 background-color:#EFF7FF;
             }
-            #header-container {
+            #title-header {
                 background-color:#FF5700
             }
             a {
-                color:white;
+                color:black;
                 text-decoration: none;
             }
             a:hover {
-                color:white;
-                text-decoration: none;
+                color:black;
+                
             }
             a:visited {
-                color:white;
+                color:black;
                 text-decoration: none;
+            }
+            p {
+                font-size: 1.2em;
             }
         </style>
     </head>
 
     <body>
-        <div id='header-container' class='container-fluid' >
-            <a href='/'>
-                <div class='row'>
+        <div id='content-container' class='container-fluid min-vh-100'>
+            <a href='/' style="color:white; text-decoration: none;">
+                <div id='title-header' class='row'>
                     <div id='title' class='col mx-sm-3 mt-sm-1'>
                         <h2>What are people talking about on reddit?</h2>
                     </div>
                 </div>
             </a>
-        </div>
-        <div id='content-container' class='container-fluid'>
             <div class='row mt-md-3'>
                 <div id='input-col' class='col-4 '>
-                    <form action="/f" method="GET">
+                    <form action="/" method="GET">
                         <div class="form-row mx-sm-3 mb-2">
                             <label for="subreddit">Subreddit</label>
                             <input type="text" class="form-control" id="subreddit" aria-describedby="subredditHelp"
                                 name="subreddit" value = "{{subreddit}}" placeholder="e.g. all">
                             <small id="subredditHelp" class="form-text text-muted">Enter the name of a subreddit to find out what people are talking about. Try adding subreddits with '+'.</small>
+                        </div>
+                        <div class="form-row mx-sm-3 mb-2">
+                            <label for="limit">Number of Posts</label>
+                            <select class="form-control form-control-sm" id="limit" name="limit">
+                                <option>50</option>
+                                <option selected>100</option>
+                                <option>200</option>
+                                <option>300</option>
+                            </select>
                         </div>
                         <div class="form-row mx-sm-3 mb-3">
                             <label for="postType">Post type</label>
@@ -57,7 +67,6 @@
                                 <option>top</option>
                                 <option>rising</option>
                                 <option>controversial</option>
-                                <option>gilded</option>
                             </select>
                         </div>
                         <div class="form-row mx-sm-3 mb-2">
@@ -67,17 +76,17 @@
                 </div>
 
                 <div id='results-col' class='col-8'>
-                    <small class='text-muted'>Top topics for {{post_type}} posts on /r/{{subreddit}}</small>
-                    <p>{{topic1}}</p>
-                    <p>{{topic2}}</p>
-                    <p>{{topic3}}</p>
-                    <p>{{topic4}}</p>
-                    <p>{{topic5}}</p>
-                    <p>{{topic6}}</p>
-                    <p>{{topic7}}</p>
-                    <p>{{topic8}}</p>
-                    <p>{{topic9}}</p>
-                    <p>{{topic10}}</p>
+                    <small class='text-muted'>Top {{limit}} {{post_type}} posts on /r/{{subreddit}}</small>
+                    <p><a href="https://www.google.com/search?q={{g_query1}}">{{topic1}}</a></p>
+                    <p><a href="https://www.google.com/search?q={{g_query2}}">{{topic2}}</p></a>
+                    <p><a href="https://www.google.com/search?q={{g_query3}}">{{topic3}}</p></a>
+                    <p><a href="https://www.google.com/search?q={{g_query4}}">{{topic4}}</p></a>
+                    <p><a href="https://www.google.com/search?q={{g_query5}}">{{topic5}}</p></a>
+                    <p><a href="https://www.google.com/search?q={{g_query6}}">{{topic6}}</p></a>
+                    <p><a href="https://www.google.com/search?q={{g_query7}}">{{topic7}}</p></a>
+                    <p><a href="https://www.google.com/search?q={{g_query8}}">{{topic8}}</p></a>
+                    <p><a href="https://www.google.com/search?q={{g_query9}}">{{topic9}}</p></a>
+                    <p><a href="https://www.google.com/search?q={{g_query10}}">{{topic10}}</p></a>
                 </div>
             </div>
         </div>
@@ -85,6 +94,8 @@
             <div class="row d-flex justify-content-center align-items-center pb-3">
                 <small class="text-muted">
                     This is yet unfinished. Also not affiliated with Reddit.
+                    <br>
+                    Please note that results may vary.
                 </small>
             </div>
         </div>

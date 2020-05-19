@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 import praw
+from collections import deque
 
 import nlp_helper_funcs
 
@@ -12,7 +13,7 @@ from sklearn.decomposition import TruncatedSVD
 
 # Initialize NLP systems
 vectorizer = TfidfVectorizer(ngram_range=(
-    1, 3), stop_words=stopwords.words('english'))
+    2, 3), stop_words=stopwords.words('english'))
 tokenizer = TreebankWordTokenizer().tokenize
 stemmer = PorterStemmer()
 
@@ -20,32 +21,63 @@ stemmer = PorterStemmer()
 #%% Initialize the app
 app = Flask(__name__)
 
-# Homepage
-@app.route("/")
-def home():
-    subreddit="worldnews"
-    postType="hot"
-    topics = extract_topics(subreddit, postType)
-    return (render_template('home.html',
-                            subreddit=subreddit,
-                            post_type=postType,
-                            topic1=topics[1],
-                            topic2=topics[2],
-                            topic3=topics[3],
-                            topic4=topics[4],
-                            topic5=topics[5],
-                            topic6=topics[6],
-                            topic7=topics[7],
-                            # topic8=topics[8],
-                            # topic9=topics[9],
-                            # topic10=topics[10],
-                            ))
-
-def display_topics(model, feature_names, num_top_words, topic_names=None):
+def display_topics(model, feature_names, no_top_words, topic_names=None, verbose=False):
     topics = {}
     for ix, topic in enumerate(model.components_):
-        topics[ix+1] = ", ".join([feature_names[i]
-                         for i in topic.argsort()[:-num_top_words - 1:-1]])
+        gram_list = [feature_names[i].split()
+                     for i in topic.argsort()[:-no_top_words - 1:-1]]
+
+        #instantiate variables
+        deques = {}
+        for i in range(0, len(gram_list)):
+            deques[i] = deque(gram_list[i])
+
+        final_text = []
+        clauses = []
+
+        if verbose:
+            print("DEQUES:", deques)
+
+        while len(deques) > 0:
+            # initialize clause as first deque in dictionary
+            clauses.append(deques[list(deques)[0]])
+            del deques[list(deques)[0]]
+
+            for clause in clauses:
+                while len(deques) > 0:
+                    for i in deques.copy():
+                        gram = deques[i]
+                        overlap = False
+                        # check for overlapping words and append
+                        for word in gram:
+                            if word in clause:
+                                overlap = True
+
+                            elif word not in clause and overlap == True:
+                                clause.append(word)
+                        overlap = False
+                        # reverse words in gram to prepend
+                        for word in deque(reversed(gram)):
+                            if word in clause:
+                                overlap = True
+
+                            elif word not in clause and overlap == True:
+                                clause.appendleft(word)
+
+                        if overlap == True:
+                            del deques[i]
+                        if verbose:
+                            print("OVERLAP=", overlap, "for gram", i)
+                    if verbose:
+                        print("CLAUSE:", clauses)
+                        print("DEQUES:", deques)
+                        print('end of while loop')
+                    if overlap == False:
+                        break
+            #convert clause from deque to list of strings
+            final_text.append(list(clause))
+
+            topics[ix+1] = final_text
     return topics
 
 def scrape_titles(subreddit, post_type, limit=100):
@@ -68,23 +100,21 @@ def scrape_titles(subreddit, post_type, limit=100):
         posts = reddit.subreddit(subreddit).rising(limit=limit)
     elif post_type == 'controversial':
         posts = reddit.subreddit(subreddit).controversial(limit=limit)
-    elif post_type == 'gilded':
-        posts = reddit.subreddit(subreddit).gilded(limit=limit)
     titles = []
     for post in posts:
         titles.append(post.title)
     return titles
 
-def extract_topics(subreddit, post_type):
+def extract_topics(subreddit, post_type, limit):
     '''
     NLP
     scrapes reddit, performs nlpreproc, extracts topics
     returns dict of topics
     '''
-    num_topics = 7
+    num_topics = 10
     num_grams_per_topic = 10
 
-    titles = scrape_titles(subreddit, post_type)
+    titles = scrape_titles(subreddit, post_type, limit)
 
     nlp = nlp_helper_funcs.nlp_preprocessor(vectorizer=vectorizer, cleaning_function=None,
                                             tokenizer=tokenizer, stemmer=None)
@@ -99,25 +129,51 @@ def extract_topics(subreddit, post_type):
 
     return topics
 
-@app.route("/f", methods=["GET","POST"])
+def readable_topics(topic):
+    readables = []
+    for i in range(0,len(topic)):
+        sentence = " ".join(topic[i])
+        readables.append(sentence)
+    readables = ", ".join(readables)
+    return readables
+
+def google_topics(topic):
+    search_query = []
+    for i in range(0,len(topic)):
+        query_part = "+".join(topic[i])
+        search_query.append(query_part)
+    search_query = "+".join(search_query)
+    return search_query
+
+@app.route("/", methods=["GET","POST"])
 def predict():
     query = request.args.to_dict()
-    if query['subreddit'] is '':
-        query['subreddit'] = 'all'
-    topics = extract_topics(query['subreddit'], query['postType'])
+    if query == {}:
+            query['subreddit'] = "worldnews"
+            query['postType'] = "hot"
+            query['limit'] = 100
+    else:
+        if query['subreddit'] is '':
+            query['subreddit'] = 'all'
+    topics = extract_topics(query['subreddit'], query['postType'], int(query['limit']))
     return (render_template('home.html',
                             subreddit=query['subreddit'],
                             post_type=query['postType'],
-                            topic1=topics[1],
-                            topic2=topics[2],
-                            topic3=topics[3],
-                            topic4=topics[4],
-                            topic5=topics[5],
-                            topic6=topics[6],
-                            topic7=topics[7],
-                            # topic8=topics[8],
-                            # topic9=topics[9],
-                            # topic10=topics[10],
+                            topic1=readable_topics(topics[1]),
+                            g_query1=google_topics(topics[1]),
+                            topic2=readable_topics(topics[2]),
+                            g_query2=google_topics(topics[2]),
+                            topic3=readable_topics(topics[3]),
+                            g_query3=google_topics(topics[3]),
+                            topic4=readable_topics(topics[4]),
+                            g_query4=google_topics(topics[4]),
+                            topic5=readable_topics(topics[5]),
+                            g_query5=google_topics(topics[5]),
+                            topic6=readable_topics(topics[6]),
+                            g_query6=google_topics(topics[6]),
+                            topic7=readable_topics(topics[7]),
+                            g_query7=google_topics(topics[7]),
+                            limit=query['limit']
                             ))
 
 
@@ -125,5 +181,5 @@ def predict():
 # Start the app server on port XXXX
 # (The default website port)
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
     # debug=True
