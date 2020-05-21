@@ -1,5 +1,11 @@
 flask
 gunicorn
+praw
+pandas
+numpy
+datetime
+collections
 sklearn
 nltk
-praw
+
+bokeh
