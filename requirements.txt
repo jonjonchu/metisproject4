@@ -3,9 +3,6 @@ gunicorn
 praw
 pandas
 numpy
-datetime
-collections
 sklearn
 nltk
-
 bokeh
