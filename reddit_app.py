@@ -338,6 +338,13 @@ def predict():
                             bokeh_js1=bokeh_js1,
                             ))
 
+@app.errorhandler(404)
+def not_found(e):
+    return render_template("404.html")
+
+@app.errorhandler(500)
+def not_found(e):
+    return render_template("500.html")
 
 #%%--------- RUN WEB APP SERVER ------------#
 # Start the app server on port XXXX
