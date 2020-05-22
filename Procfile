@@ -1,0 +1,1 @@
+web: gunicorn reddit_app:app --log-file=-

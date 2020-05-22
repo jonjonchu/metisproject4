@@ -1,0 +1,8 @@
+flask
+gunicorn
+praw
+pandas
+numpy
+sklearn
+nltk
+bokeh
